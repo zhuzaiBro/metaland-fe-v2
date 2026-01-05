@@ -111,7 +111,7 @@ export function WalletButton({
             <button
               onClick={openConnectModal}
               className={cn(
-                'group relative flex h-10 items-center justify-center gap-2 rounded-lg border border-[]/50 px-4 font-medium text-[] transition-all hover:bg-[]/5',
+                'group relative flex h-10 items-center justify-center gap-2 rounded-lg border border-[]/50 px-4 font-medium text-[#fff] transition-all hover:bg-[]/5',
                 variant === 'mobile' ? 'w-full' : 'min-w-[140px]',
                 className
               )}
