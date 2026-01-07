@@ -173,10 +173,10 @@ export function CreatorInfo({
 
           <div className="flex flex-shrink-0 flex-col gap-2">
             {/* Heat Button */}
-            <Button className="h-6 w-14 rounded-md bg-[#FBD537] px-2 py-1 text-xs font-normal text-black hover:bg-[#FBD537]/90">
+            <Button className="h-6 w-14 rounded-md bg-[#BFFB06] px-2 py-1 text-xs font-normal text-black hover:bg-[#BFFB06]/90">
               {t('heat')}
             </Button>
-            <Button className="h-6 w-auto min-w-[58px] gap-1 rounded-md border border-[#FFFFFF1A] bg-[#11131999] px-1.5 py-1 text-xs font-normal text-[#FBD537] transition-colors duration-200 hover:border-[#FBD53788] hover:bg-[#1D202A]">
+            <Button className="h-6 w-auto min-w-[58px] gap-1 rounded-md border border-[#FFFFFF1A] bg-[#11131999] px-1.5 py-1 text-xs font-normal text-[#BFFB06] transition-colors duration-200 hover:border-[#BFFB0688] hover:bg-[#1D202A]">
               <Image
                 src={ShareIcon}
                 alt="share"
@@ -200,7 +200,7 @@ export function CreatorInfo({
         <div className="flex justify-end">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="text-xs leading-5 font-normal text-[#FBD537] transition-colors hover:text-[#FBD537]/80"
+            className="text-xs leading-5 font-normal text-[#BFFB06] transition-colors hover:text-[#BFFB06]/80"
           >
             {t('viewMore')}
           </button>
@@ -330,10 +330,10 @@ export function CreatorInfo({
                   </div>
                 </div>
                 <div className="flex flex-shrink-0 flex-col gap-2">
-                  <Button className="h-6 w-14 rounded-md bg-[#FBD537] px-2 py-1 text-xs font-normal text-black hover:bg-[#FBD537]/90">
+                  <Button className="h-6 w-14 rounded-md bg-[#BFFB06] px-2 py-1 text-xs font-normal text-black hover:bg-[#BFFB06]/90">
                     {t('heat')}
                   </Button>
-                  <Button className="h-6 w-auto min-w-[58px] gap-1 rounded-md border border-[#FFFFFF1A] bg-[#11131999] px-1.5 py-1 text-xs font-normal text-[#FBD537] transition-colors duration-200 hover:border-[#FBD53788] hover:bg-[#1D202A]">
+                  <Button className="h-6 w-auto min-w-[58px] gap-1 rounded-md border border-[#FFFFFF1A] bg-[#11131999] px-1.5 py-1 text-xs font-normal text-[#BFFB06] transition-colors duration-200 hover:border-[#BFFB0688] hover:bg-[#1D202A]">
                     <Image
                       src={ShareIcon}
                       alt="share"

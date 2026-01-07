@@ -149,7 +149,7 @@ export function EssentialInfoSection({
                           /(up to \d+\.?\d*%|最多\s*\d+\.?\d*%)/gi.test(part)
                         ) {
                           return (
-                            <span key={index} className="text-[#FBD537]">
+                            <span key={index} className="text-[#BFFB06]">
                               {part}
                             </span>
                           )
@@ -721,8 +721,8 @@ export function EssentialInfoSection({
               }}
               className={`flex-1 border ${
                 addressMode === 'random'
-                  ? 'border-[] bg-[#252832] text-[]'
-                  : 'border-transparent bg-[#242832] text-[#656A79] hover:border-[] hover:bg-[#252832] hover:text-[]'
+                  ? 'border-[] bg-[#252832] text-[#fefefe]'
+                  : 'border-transparent bg-[#242832] text-[#fefefe] hover:border-[] hover:bg-[#252832] hover:text-[#fefefe]'
               }`}
             >
               {t('createToken.settings.last4RandomDigits')}

@@ -20,7 +20,7 @@ export function TagsSection({ selectedTags, onToggleTag }: TagsSectionProps) {
           <span className="text-base font-bold text-[#F0F1F5]">
             {t('createToken.form.tag')}
           </span>
-          <span className="text-base font-bold text-[#FBD537]">
+          <span className="text-base font-bold text-[#BFFB06]">
             {t('createToken.form.required')}
           </span>
         </div>
@@ -37,8 +37,8 @@ export function TagsSection({ selectedTags, onToggleTag }: TagsSectionProps) {
             className={cn(
               'h-10 w-16 rounded-lg border text-nowrap transition-colors md:h-12 md:w-30 md:px-4 md:py-3',
               selectedTags.includes(tag.key)
-                ? 'border-[#FBD537] bg-[#191B22] text-[#FBD537]'
-                : 'border-[#2B3139] bg-[#191B22] text-[#656A79] hover:border-[#FBD537]'
+                ? 'border-[#BFFB06] bg-[#191B22] text-[#BFFB06]'
+                : 'border-[#2B3139] bg-[#191B22] text-[#656A79] hover:border-[#BFFB06]'
             )}
           >
             {tag.label}

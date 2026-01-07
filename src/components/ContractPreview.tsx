@@ -110,7 +110,7 @@ export function ContractPreview({
   return (
     <div
       className={cn(
-        'w-full rounded-lg border border-[#2B3139] bg-[#191B22] transition-all hover:border-[#FBD537]/20',
+        'w-full rounded-lg border border-[#2B3139] bg-[#191B22] transition-all hover:border-[#BFFB06]/20',
         className
       )}
     >
@@ -127,11 +127,11 @@ export function ContractPreview({
             height={20}
             className="object-contain"
           />
-          <span className="text-base font-bold text-[#FBD537]">
+          <span className="text-base font-bold text-[#BFFB06]">
             {t('createToken.preview.clickToPreview')}
           </span>
           {calculateAddressMutation.isPending && (
-            <Loader2 className="ml-2 size-4 animate-spin text-[#FBD537]" />
+            <Loader2 className="ml-2 size-4 animate-spin text-[#BFFB06]" />
           )}
         </div>
 

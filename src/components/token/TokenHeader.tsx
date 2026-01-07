@@ -312,7 +312,7 @@ export function TokenHeader({ tokenAddress, tokenData }: TokenHeaderProps) {
                   cy="18"
                   r="17.4375"
                   fill="none"
-                  stroke="#FBD537"
+                  stroke="#BFFB06"
                   strokeWidth="1.125"
                   strokeDasharray={`${(2 * Math.PI * 17.4375 * Math.min(data.burnProgress, 100)) / 100} ${2 * Math.PI * 17.4375}`}
                   strokeLinecap="round"
@@ -401,12 +401,12 @@ export function TokenHeader({ tokenAddress, tokenData }: TokenHeaderProps) {
             {/* Progress Bar */}
             {data.progressPct !== undefined && (
               <div className="ml-2 flex items-center gap-2">
-                <span className="font-din-pro text-xs text-[#FBD537]">
+                <span className="font-din-pro text-xs text-[#BFFB06]">
                   {data.progressPct.toFixed(1)}%
                 </span>
                 <div className="relative h-1 w-[29px] overflow-hidden rounded-lg bg-[rgba(224,212,131,0.45)]">
                   <div
-                    className="absolute top-0 left-0 h-full rounded-lg bg-[#FBD537]"
+                    className="absolute top-0 left-0 h-full rounded-lg bg-[#BFFB06]"
                     style={{ width: `${Math.min(data.progressPct, 100)}%` }}
                   />
                 </div>
@@ -605,7 +605,7 @@ export function TokenHeader({ tokenAddress, tokenData }: TokenHeaderProps) {
               >
                 <TokenPageShareIcon
                   size={24}
-                  className="text-[#798391] transition hover:text-[#FBD537]"
+                  className="text-[#798391] transition hover:text-[#BFFB06]"
                 />
               </button>
               <button
@@ -616,7 +616,7 @@ export function TokenHeader({ tokenAddress, tokenData }: TokenHeaderProps) {
               >
                 <TokenPageSettingsIcon
                   size={24}
-                  className="text-[#798391] transition hover:text-[#FBD537]"
+                  className="text-[#798391] transition hover:text-[#BFFB06]"
                 />
               </button>
             </div>

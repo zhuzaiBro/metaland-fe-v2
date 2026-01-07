@@ -394,7 +394,7 @@ export function TokenInfo({ tokenAddress, className }: TokenInfoProps) {
                   href={data.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-sm break-all text-white transition-colors hover:text-[#FBD537]"
+                  className="block text-sm break-all text-white transition-colors hover:text-[#BFFB06]"
                 >
                   {data.website}
                 </a>
@@ -408,7 +408,7 @@ export function TokenInfo({ tokenAddress, className }: TokenInfoProps) {
                   href={data.explorer}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-sm break-all text-white transition-colors hover:text-[#FBD537]"
+                  className="block text-sm break-all text-white transition-colors hover:text-[#BFFB06]"
                 >
                   {data.explorer}
                 </a>
@@ -427,7 +427,7 @@ export function TokenInfo({ tokenAddress, className }: TokenInfoProps) {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 rounded-[42px] border border-[#2B3139] px-3 py-2 transition-colors hover:border-[#FBD537]"
+                    className="flex items-center gap-1 rounded-[42px] border border-[#2B3139] px-3 py-2 transition-colors hover:border-[#BFFB06]"
                   >
                     <div className="flex h-4 w-4 items-center justify-center rounded-lg bg-[#252832]">
                       {social.platform === 'Twitter' ? (

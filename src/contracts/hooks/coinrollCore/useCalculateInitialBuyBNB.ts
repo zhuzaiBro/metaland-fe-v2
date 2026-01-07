@@ -177,7 +177,7 @@ export function useCalculateInitialBuyBNB(
 export function calculateInitialBuyBNBDirect(
   params: CalculateInitialBuyBNBParams
 ): CalculateInitialBuyResult {
-  const { saleAmount, virtualBNBReserve, virtualTokenReserve, percentageBP } =
+  const { saleAmount, virtualBNBReserve, virtualTokenReserve, percentageBP, totalSupply } =
     params
 
   // Convert to bigint if needed
@@ -195,8 +195,13 @@ export function calculateInitialBuyBNBDirect(
       : virtualTokenReserve
 
   // Calculate tokens to purchase based on percentage
+  // IMPORTANT: Contract uses totalSupply, not saleAmount (see MEMECore.sol:1064)
+  // tokensOut = (totalSupply * percentageBP) / 10000
+  const totalSupplyBigInt = totalSupply
+    ? (typeof totalSupply === 'string' ? parseEther(totalSupply) : totalSupply)
+    : saleAmountBigInt // Fallback to saleAmount for backward compatibility
   const tokensToPurchase =
-    (saleAmountBigInt * BigInt(percentageBP)) / BigInt(10000)
+    (totalSupplyBigInt * BigInt(percentageBP)) / BigInt(10000)
 
   // Using constant product formula: k = x * y
   // After buying: (virtualBNB + bnbIn) * (virtualToken - tokensOut) = k

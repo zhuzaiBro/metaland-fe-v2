@@ -403,11 +403,11 @@
 }
 
 .scrollbar-accent::-webkit-scrollbar-thumb:hover {
-  background: #fbd53750;
+  background: #BFFB0650;
 }
 
 .scrollbar-accent::-webkit-scrollbar-thumb:active {
-  background: #fbd537;
+  background: #BFFB06;
 }
 
 /* Dark scrollbar variant (for lighter backgrounds) */

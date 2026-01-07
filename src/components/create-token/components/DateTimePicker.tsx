@@ -160,7 +160,7 @@ export function DateTimePicker({
           className={cn(
             'flex h-[40px] w-[40px] items-center justify-center rounded-[4px] transition-colors',
             isSelected
-              ? 'bg-[#FBD537] text-[#0A0C0F]'
+              ? 'bg-[#BFFB06] text-[#000000]'
               : 'text-[#F0F1F5] hover:bg-[#3F475A]'
           )}
         >
@@ -231,7 +231,7 @@ export function DateTimePicker({
             className={cn(
               'flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-[4px] transition-colors',
               selectedValue === value
-                ? 'bg-[#FBD537] text-[#0A0C0F]'
+                ? 'bg-[#BFFB06] text-[#0A0C0F]'
                 : 'text-[#F0F1F5] hover:bg-[#3F475A]'
             )}
           >
@@ -419,7 +419,7 @@ export function DateTimePicker({
                   className={cn(
                     'flex h-[40px] w-[40px] items-center justify-center rounded-[4px] transition-colors',
                     selectedAmPm === 'AM'
-                      ? 'bg-[#FBD537] text-[#0A0C0F]'
+                      ? 'bg-[#BFFB06] text-[#0A0C0F]'
                       : 'text-[#F0F1F5] hover:bg-[#3F475A]'
                   )}
                 >
@@ -430,7 +430,7 @@ export function DateTimePicker({
                   className={cn(
                     'flex h-[40px] w-[40px] items-center justify-center rounded-[4px] transition-colors',
                     selectedAmPm === 'PM'
-                      ? 'bg-[#FBD537] text-[#0A0C0F]'
+                      ? 'bg-[#BFFB06] text-[#0A0C0F]'
                       : 'text-[#F0F1F5] hover:bg-[#3F475A]'
                   )}
                 >
@@ -449,7 +449,7 @@ export function DateTimePicker({
               </button>
               <button
                 onClick={handleOK}
-                className="flex h-[32px] w-[100px] items-center justify-center rounded-[4px] bg-[#FBD537] text-[14px] font-semibold text-[#0A0C0F] transition-colors hover:bg-[]"
+                className="flex h-[32px] w-[100px] items-center justify-center rounded-[4px] bg-[#BFFB06] text-[14px] font-semibold text-[#0A0C0F] transition-colors hover:bg-[]"
               >
                 OK
               </button>

@@ -142,16 +142,15 @@ export function TrendingCard({ token }: { token: TokenListItem }) {
             launchMode={token.launchMode}
           />
         </div>
-
         {/* Token Logo */}
         <div className="mt-5 flex items-start gap-1 px-4">
-          <div className="relative h-22 w-22 overflow-hidden rounded-xl border-4 border-[#111319]">
+          <div className="relative h-22 w-22 bg-[#111319] overflow-hidden rounded-xl border-4 border-[#111319]">
             <Image
               src={token.logo || '/assets/images/placeholder-token.svg'}
               alt={token.name}
               fill
               className="object-cover"
-              onError={(e) => {
+              onError={(e) => {  
                 e.currentTarget.src = '/assets/images/placeholder-token.svg'
               }}
             />

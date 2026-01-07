@@ -33,7 +33,7 @@ export function InlineFormLabel({
       <div className="flex items-center gap-1">
         <span className="text-base font-bold">{children}</span>
         {required && (
-          <span className="text-base font-bold text-[#FBD537]">*</span>
+          <span className="text-base font-bold text-[#BFFB06]">*</span>
         )}
         {optional && <span className="text-sm text-[#656A79]">(Optional)</span>}
       </div>

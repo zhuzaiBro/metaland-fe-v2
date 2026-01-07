@@ -15,6 +15,7 @@ import { parseEther, formatEther, Address } from 'viem'
 import { getCoinRollCoreAddress } from '@/contracts/addresses'
 import CoinRollCoreABI from '@/contracts/abis/CoinRollCore.json'
 import type { BondingCurveParams } from '@/contracts/types/coinrollHelper'
+import { retryOnError, parseContractError, ContractErrorCode } from '@/contracts/utils/errors'
 
 export interface BuyTokensParams {
   tokenAddress?: string
@@ -117,13 +118,29 @@ export function useBuyTokens(params: BuyTokensParams): BuyTokensResult {
     hash,
   })
 
-  // Buy function
+  // Buy function with retry mechanism
   const buy = useCallback(async () => {
     if (!simulateData?.request) {
       throw new Error('Transaction not prepared')
     }
 
-    await writeContract(simulateData.request as any)
+    // Retry on RPC errors
+    await retryOnError(
+      async () => {
+        await writeContract(simulateData.request as any)
+      },
+      {
+        maxRetries: 3,
+        retryDelay: 1000,
+        shouldRetry: (error) => {
+          const parsed = parseContractError(error)
+          return (
+            parsed.code === ContractErrorCode.RPC_ERROR ||
+            parsed.code === ContractErrorCode.NETWORK_ERROR
+          )
+        },
+      }
+    )
   }, [simulateData, writeContract])
 
   // Can buy check

@@ -304,7 +304,7 @@ export function ChatRoom({
             const starLevel = getUserStarLevel(comment.walletAddress)
             const addressColor =
               starLevel === 5
-                ? '#FBD537'
+                ? '#BFFB06'
                 : starLevel === 4 || starLevel === 3
                   ? '#DFAC6C'
                   : starLevel === 2
@@ -363,7 +363,7 @@ export function ChatRoom({
               onKeyPress={handleKeyPress}
               placeholder={t('inputPlaceholder')}
               disabled={isSubmitting}
-              className="h-10 w-full rounded-lg border border-[#2B3139] bg-[#15181E] px-3 text-sm font-medium text-white placeholder-[#656A79] focus:border-[#FBD537] focus:outline-none disabled:opacity-50"
+              className="h-10 w-full rounded-lg border border-[#2B3139] bg-[#15181E] px-3 text-sm font-medium text-white placeholder-[#656A79] focus:border-[#BFFB06] focus:outline-none disabled:opacity-50"
             />
           </div>
 

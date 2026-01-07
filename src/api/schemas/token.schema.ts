@@ -97,16 +97,13 @@ export const CreateTokenResponseSchema = z.object({
       create2Salt: z.string(), // Salt for CREATE2 deployment
       createArg: z.string(), // Encoded arguments for contract's createToken method
       nonce: z.number(),
-      predictedAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/), // Predicted token address
+      predictedAddress: z.string(), // Predicted token address (may be empty if calculation fails)
       requestId: z.string(), // Unique request ID
       signature: z.string(), // Signature for contract's createToken method
       timestamp: z.number(), // Request timestamp
       // Optional fields from original schema (for backward compatibility)
       tokenId: z.number().optional(),
-      tokenAddress: z
-        .string()
-        .regex(/^0x[a-fA-F0-9]{40}$/)
-        .optional(),
+      tokenAddress: z.string().optional(),
       transactionHash: z.string().optional(),
       success: z.boolean().optional(),
     })

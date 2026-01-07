@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         hostname: 'static.coinroll.io',
         pathname: '/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'upload.metanode.tech',
+        pathname: '/**',
+      },
     ],
     domains: ['static.coinroll.io'],
     unoptimized: true,

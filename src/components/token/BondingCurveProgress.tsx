@@ -27,7 +27,7 @@ export function BondingCurveProgress({
       {/* Header with title and percentage */}
       <div className="mb-[9px] flex items-center justify-between">
         <h3 className="text-sm font-bold text-white">{t('title')}</h3>
-        <span className="text-sm font-bold text-[#FBD537]">
+        <span className="text-sm font-bold text-[#BFFB06]">
           {progress.toFixed(2)}%
         </span>
       </div>

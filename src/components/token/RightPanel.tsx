@@ -1170,7 +1170,7 @@ export function RightPanel({
           className={cn(
             'mt-10 h-10 w-full rounded-md text-base font-normal transition-all',
             !isConnected
-              ? 'bg-[#FBD537] text-black hover:bg-[#FBD537]/90'
+              ? 'bg-[#BFFB06] text-black hover:bg-[#BFFB06]/90'
               : !isTokenLaunched
                 ? 'cursor-not-allowed bg-[#798391] text-white opacity-60'
                 : activeTab === 'buy'

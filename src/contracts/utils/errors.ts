@@ -179,6 +179,21 @@ function parseViemError(error: BaseError): {
     }
   }
 
+  // Check for RPC/HTTP errors
+  if (
+    error.message?.includes('RPC endpoint') ||
+    error.message?.includes('HTTP client error') ||
+    error.message?.includes('fetch failed') ||
+    error.message?.includes('network error') ||
+    error.cause?.message?.includes('fetch')
+  ) {
+    return {
+      code: ContractErrorCode.RPC_ERROR,
+      message: ERROR_MESSAGES[ContractErrorCode.RPC_ERROR],
+      originalError: error,
+    }
+  }
+
   // Check for gas errors
   if (error.message?.includes('gas') || error.message?.includes('Gas')) {
     return {

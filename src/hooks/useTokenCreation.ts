@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback } from 'react'
-import { type Hex, parseEther, decodeAbiParameters } from 'viem'
+import { type Hex, parseEther } from 'viem'
 import { useCreateToken } from '@/api/endpoints/tokens'
 import { useCreateTokenContract } from '@/contracts/hooks/coinrollCore'
 import { calculateInitialBuyBNBDirect } from '@/contracts/hooks/coinrollCore/useCalculateInitialBuyBNB'
@@ -13,6 +13,12 @@ import { COINROLL_CORE_CONSTANTS } from '@/contracts/types/coinrollCore'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { LaunchMode } from '@/types/token'
+import { usePublicClient, useChainId } from 'wagmi'
+import { getCoinRollCoreAddress } from '@/contracts/addresses'
+import MetaNodeCoreArtifact from '@/contracts/abis/MetaNodeCore.json'
+
+// Extract ABI from artifact (Foundry output format)
+const MetaNodeCoreABI = (MetaNodeCoreArtifact as any).abi || MetaNodeCoreArtifact
 
 export interface TokenCreationData {
   // Basic token info
@@ -85,6 +91,9 @@ export function useTokenCreation(): TokenCreationResult {
   // API and contract hooks
   const createTokenMutation = useCreateToken()
   const createTokenContract = useCreateTokenContract()
+  const publicClient = usePublicClient()
+  const chainId = useChainId()
+  const contractAddress = getCoinRollCoreAddress(chainId)
 
   /**
    * Create token through API and contract
@@ -113,55 +122,90 @@ export function useTokenCreation(): TokenCreationResult {
 
         const { createArg, signature, predictedAddress } = apiResult.data
 
-        // Decode the createArg to extract bonding curve parameters
-        // The createArg contains encoded parameters including bonding curve values
-        let saleAmount = COINROLL_CORE_CONSTANTS.DEFAULT_SALE_AMOUNT
-        let virtualBNBReserve =
-          COINROLL_CORE_CONSTANTS.DEFAULT_VIRTUAL_BNB_RESERVE
-        let virtualTokenReserve =
-          COINROLL_CORE_CONSTANTS.DEFAULT_VIRTUAL_TOKEN_RESERVE
+        // Use default bonding curve parameters
+        // Note: Backend uses fixed default values:
+        // - DefaultTotalSupply = 1,000,000,000 * 10^18
+        // - DefaultSaleAmount = 800,000,000 * 10^18
+        // - DefaultVirtualBNBReserve = ~8.22 BNB
+        // - DefaultVirtualTokenReserve = 1,073,972,602 * 10^18
+        // IMPORTANT: Contract uses totalSupply (not saleAmount) for initial buy calculation (MEMECore.sol:1064)
+        const totalSupply = parseEther('1000000000') // 1,000,000,000 tokens (matches backend DefaultTotalSupply)
+        const saleAmount = COINROLL_CORE_CONSTANTS.DEFAULT_SALE_AMOUNT
+        const virtualBNBReserve = COINROLL_CORE_CONSTANTS.DEFAULT_VIRTUAL_BNB_RESERVE
+        const virtualTokenReserve = COINROLL_CORE_CONSTANTS.DEFAULT_VIRTUAL_TOKEN_RESERVE
 
-        try {
-          // Attempt to decode createArg to extract actual parameters
-          // The structure should match the contract's createToken function parameters
-          // This is a simplified decode - actual structure depends on contract encoding
-          const decoded = decodeAbiParameters(
-            [
-              { name: 'requestId', type: 'bytes32' },
-              { name: 'timestamp', type: 'uint256' },
-              { name: 'creator', type: 'address' },
-              { name: 'name', type: 'string' },
-              { name: 'symbol', type: 'string' },
-              { name: 'totalSupply', type: 'uint256' },
-              { name: 'virtualBNBReserve', type: 'uint256' },
-              { name: 'virtualTokenReserve', type: 'uint256' },
-              { name: 'saleAmount', type: 'uint256' },
-              { name: 'initialBuyPercentageBP', type: 'uint256' },
-            ],
-            createArg as Hex
-          )
+        console.log('Using default bonding curve parameters:', {
+          totalSupply: totalSupply.toString(),
+          virtualBNBReserve: virtualBNBReserve.toString(),
+          virtualTokenReserve: virtualTokenReserve.toString(),
+          saleAmount: saleAmount.toString(),
+        })
 
-          // Use decoded values if available
-          if (decoded[6]) virtualBNBReserve = decoded[6] as bigint
-          if (decoded[7]) virtualTokenReserve = decoded[7] as bigint
-          if (decoded[8]) saleAmount = decoded[8] as bigint
-
-          console.log('Decoded bonding curve parameters:', {
-            virtualBNBReserve: virtualBNBReserve.toString(),
-            virtualTokenReserve: virtualTokenReserve.toString(),
-            saleAmount: saleAmount.toString(),
-          })
-        } catch (err) {
-          // If decoding fails, use default values (already set above)
-          console.log(
-            'Using default bonding curve parameters (decode failed):',
-            err
-          )
+        // Step 1.5: Read contract fees
+        if (!publicClient || !contractAddress) {
+          throw new Error('Public client or contract address not available')
         }
 
-        // Calculate total BNB value needed for prebuy and margin
-        let bnbValue = BigInt(0)
+        // Read creationFee and preBuyFeeRate from contract
+        console.log('[useTokenCreation] Reading contract fees from:', contractAddress)
+        let creationFee: bigint
+        let preBuyFeeRate: bigint
+        
+        try {
+          const results = await Promise.all([
+            publicClient.readContract({
+              address: contractAddress,
+              abi: MetaNodeCoreABI,
+              functionName: 'creationFee',
+              args: [],
+            }) as Promise<bigint>,
+            publicClient.readContract({
+              address: contractAddress,
+              abi: MetaNodeCoreABI,
+              functionName: 'preBuyFeeRate',
+              args: [],
+            }) as Promise<bigint>,
+          ])
+          creationFee = results[0]
+          preBuyFeeRate = results[1]
+        } catch (error) {
+          console.error('[useTokenCreation] Failed to read contract fees:', error)
+          throw new Error(`Failed to read contract fees: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        }
+
+        console.log('[useTokenCreation] Contract fees read successfully:', {
+          creationFee: creationFee.toString(),
+          creationFeeBNB: (Number(creationFee) / 1e18).toFixed(6),
+          preBuyFeeRate: preBuyFeeRate.toString(),
+          preBuyFeeRatePercent: (Number(preBuyFeeRate) / 100).toFixed(2) + '%',
+        })
+        
+        // Validate creationFee is not zero
+        if (creationFee === BigInt(0)) {
+          console.error('[useTokenCreation] ERROR: creationFee is 0! This will cause InsufficientFee error.')
+          throw new Error('Failed to read creationFee from contract. Please check contract connection.')
+        }
+        
+        // Validate creationFee is reasonable (should be around 0.05 BNB = 50000000000000000 wei)
+        const expectedCreationFee = BigInt('50000000000000000') // 0.05 BNB
+        if (creationFee < expectedCreationFee / BigInt(2) || creationFee > expectedCreationFee * BigInt(2)) {
+          console.warn('[useTokenCreation] WARNING: creationFee seems unusual:', {
+            expected: expectedCreationFee.toString(),
+            actual: creationFee.toString(),
+          })
+        }
+
+        // Calculate total BNB value needed
+        // According to contract logic (MEMECore.sol:403-430):
+        // totalPaymentRequired = creationFee
+        // if (marginBnb > 0) totalPaymentRequired += marginBnb
+        // if (initialBuyPercentage > 0) {
+        //   preBuyFee = (initialBNB * preBuyFeeRate) / 10000
+        //   totalPaymentRequired += initialBNB + preBuyFee
+        // }
+        let bnbValue = creationFee // Start with creation fee
         let prebuyBNB = BigInt(0)
+        let preBuyFee = BigInt(0)
         let marginBNB = BigInt(0)
 
         // Calculate prebuy BNB if specified
@@ -171,18 +215,63 @@ export function useTokenCreation(): TokenCreationResult {
           const percentageBP = Math.round(data.preBuyPercent * 10000)
 
           // Calculate required BNB using the actual bonding curve parameters
-          const calculationResult = calculateInitialBuyBNBDirect({
-            saleAmount,
-            virtualBNBReserve,
-            virtualTokenReserve,
-            percentageBP,
-          })
-
-          prebuyBNB = calculationResult.bnbRequired
-          bnbValue += prebuyBNB
+          // IMPORTANT: Contract uses totalSupply (not saleAmount) for calculation (MEMECore.sol:1064)
+          // Use contract's calculateInitialBuyBNB function for 100% accuracy
+          let calculationResult
+          try {
+            // Contract function returns (totalPayment, preBuyFee)
+            // where totalPayment = initialBNB + preBuyFee
+            const contractResult = await publicClient.readContract({
+              address: contractAddress,
+              abi: MetaNodeCoreABI,
+              functionName: 'calculateInitialBuyBNB',
+              args: [totalSupply, virtualBNBReserve, virtualTokenReserve, BigInt(percentageBP)],
+            }) as [bigint, bigint]
+            
+            const [contractTotalPayment, contractPreBuyFee] = contractResult
+            // totalPayment = initialBNB + preBuyFee, so initialBNB = totalPayment - preBuyFee
+            const contractInitialBNB = contractTotalPayment - contractPreBuyFee
+            
+            console.log('[useTokenCreation] Using contract calculateInitialBuyBNB (EXACT MATCH):', {
+              totalPayment: contractTotalPayment.toString(),
+              totalPaymentBNB: (Number(contractTotalPayment) / 1e18).toFixed(6),
+              initialBNB: contractInitialBNB.toString(),
+              initialBNBBNB: (Number(contractInitialBNB) / 1e18).toFixed(6),
+              preBuyFee: contractPreBuyFee.toString(),
+              preBuyFeeBNB: (Number(contractPreBuyFee) / 1e18).toFixed(6),
+            })
+            
+            prebuyBNB = contractInitialBNB
+            preBuyFee = contractPreBuyFee
+            calculationResult = {
+              bnbRequired: contractInitialBNB,
+              bnbRequiredFormatted: (Number(contractInitialBNB) / 1e18).toFixed(6),
+            }
+          } catch (contractError) {
+            console.warn('[useTokenCreation] Failed to use contract function, using direct calculation:', contractError)
+            // Fallback to direct calculation (should match, but contract is source of truth)
+            calculationResult = calculateInitialBuyBNBDirect({
+              saleAmount,
+              totalSupply, // Contract uses totalSupply for initial buy calculation
+              virtualBNBReserve,
+              virtualTokenReserve,
+              percentageBP,
+            })
+            
+            prebuyBNB = calculationResult.bnbRequired
+            // Calculate preBuyFee: (initialBNB * preBuyFeeRate) / 10000
+            preBuyFee = (prebuyBNB * preBuyFeeRate) / BigInt(10000)
+            
+            console.warn('[useTokenCreation] Using direct calculation (may have rounding differences):', {
+              initialBNB: prebuyBNB.toString(),
+              preBuyFee: preBuyFee.toString(),
+            })
+          }
+          
+          bnbValue += prebuyBNB + preBuyFee
 
           console.log(
-            `Prebuy enabled: ${data.preBuyPercent * 100}% requires ${calculationResult.bnbRequiredFormatted} BNB`
+            `Prebuy enabled: ${data.preBuyPercent * 100}% requires ${calculationResult.bnbRequiredFormatted} BNB + ${(Number(preBuyFee) / 1e18).toFixed(6)} BNB fee`
           )
         }
 
@@ -197,17 +286,53 @@ export function useTokenCreation(): TokenCreationResult {
         }
 
         // Step 2: Execute contract transaction
-        console.log(
-          'Executing contract transaction with total value:',
-          bnbValue.toString(),
-          `(Prebuy: ${prebuyBNB.toString()}, Margin: ${marginBNB.toString()})`
-        )
+        // Detailed breakdown for debugging
+        const breakdown = {
+          creationFee: Number(creationFee) / 1e18,
+          prebuyBNB: Number(prebuyBNB) / 1e18,
+          preBuyFee: Number(preBuyFee) / 1e18,
+          marginBNB: Number(marginBNB) / 1e18,
+          total: Number(bnbValue) / 1e18,
+        }
+        console.log('[useTokenCreation] Fee breakdown:', breakdown)
+        console.log('[useTokenCreation] Total value (wei):', bnbValue.toString())
+        console.log('[useTokenCreation] Total value (BNB):', breakdown.total.toFixed(6))
+        
+        // Validate total value is at least creationFee
+        if (bnbValue < creationFee) {
+          console.error('[useTokenCreation] ERROR: Total value is less than creationFee!', {
+            bnbValue: bnbValue.toString(),
+            bnbValueBNB: breakdown.total.toFixed(6),
+            creationFee: creationFee.toString(),
+            creationFeeBNB: breakdown.creationFee.toFixed(6),
+            difference: (Number(bnbValue - creationFee) / 1e18).toFixed(6),
+          })
+          throw new Error(`Total value (${breakdown.total.toFixed(6)} BNB) is less than creation fee (${breakdown.creationFee.toFixed(6)} BNB)`)
+        }
+        
+        // Additional validation: ensure we have enough for all components
+        const calculatedTotal = creationFee + prebuyBNB + preBuyFee + marginBNB
+        if (bnbValue !== calculatedTotal) {
+          console.warn('[useTokenCreation] WARNING: bnbValue does not match calculated total!', {
+            bnbValue: bnbValue.toString(),
+            calculatedTotal: calculatedTotal.toString(),
+            difference: (Number(bnbValue - calculatedTotal) / 1e18).toFixed(6),
+          })
+          // Use the calculated total to ensure accuracy
+          bnbValue = calculatedTotal
+          console.log('[useTokenCreation] Using calculated total:', bnbValue.toString(), 'wei', `(${(Number(bnbValue) / 1e18).toFixed(6)} BNB)`)
+        }
+        
+        console.log('[useTokenCreation] Validation passed. Ready to send transaction with value:', bnbValue.toString(), 'wei', `(${(Number(bnbValue) / 1e18).toFixed(6)} BNB)`)
+        
         const contractResult = await createTokenContract.createToken({
           createArg: createArg as Hex,
           signature: signature as Hex,
-          value: bnbValue, // Pass total BNB value for prebuy and margin
+          value: bnbValue, // Pass total BNB value including all fees
           valueBreakdown: {
+            creationFee,
             prebuy: prebuyBNB,
+            preBuyFee,
             margin: marginBNB,
           },
         })
@@ -250,7 +375,7 @@ export function useTokenCreation(): TokenCreationResult {
         setIsCreating(false)
       }
     },
-    [createTokenMutation, createTokenContract, t]
+    [createTokenMutation, createTokenContract, t, publicClient, contractAddress]
   )
 
   /**

@@ -138,7 +138,7 @@ export const getDefaultChartProps = (
     enabled_features: enabledFeatures as ChartingLibraryFeatureset[],
     disabled_features: disabledFeatures as ChartingLibraryFeatureset[],
     custom_css_url: '/static/custom.css',
-    loading_screen: { backgroundColor: '#181A20', foregroundColor: '#fbd537' },
+    loading_screen: { backgroundColor: '#181A20', foregroundColor: '#BFFB06' },
     settings_overrides: {
       'paneProperties.background': '#181A20',
       'paneProperties.backgroundType': 'solid',

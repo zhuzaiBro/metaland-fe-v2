@@ -287,14 +287,11 @@ export const useUploadTokenLogo = () => {
           )
         }
 
-        // 3. 构建公开访问URL
-        // 使用静态资源域名和fileName拼接
-        const publicUrl = `https://static.coinroll.io/${responseData.fileName}`
-
-        console.log('File uploaded successfully, public URL:', publicUrl)
+        // 3. 返回后端提供的公开访问URL
+        console.log('File uploaded successfully, public URL:', responseData.publicUrl)
 
         // 返回公开访问URL
-        return publicUrl
+        return responseData.publicUrl
       } catch (error: any) {
         // 重新抛出错误，让onError处理
         throw error
@@ -415,14 +412,11 @@ export const useUploadTokenBanner = () => {
           )
         }
 
-        // 3. 构建公开访问URL
-        // 使用静态资源域名和fileName拼接
-        const publicUrl = `https://static.coinroll.io/${responseData.fileName}`
-
-        console.log('File uploaded successfully, public URL:', publicUrl)
+        // 3. 返回后端提供的公开访问URL
+        console.log('File uploaded successfully, public URL:', responseData.publicUrl)
 
         // 返回公开访问URL
-        return publicUrl
+        return responseData.publicUrl
       } catch (error: any) {
         // 重新抛出错误，让onError处理
         throw error
@@ -543,14 +537,11 @@ export const useUploadActivityBanner = () => {
           )
         }
 
-        // 3. 构建公开访问URL
-        // 使用静态资源域名和fileName拼接
-        const publicUrl = `https://static.coinroll.io/${responseData.fileName}`
-
-        console.log('File uploaded successfully, public URL:', publicUrl)
+        // 3. 返回后端提供的公开访问URL
+        console.log('File uploaded successfully, public URL:', responseData.publicUrl)
 
         // 返回公开访问URL
-        return publicUrl
+        return responseData.publicUrl
       } catch (error: any) {
         // 重新抛出错误，让onError处理
         throw error

@@ -192,7 +192,7 @@ export function TokenCreationForm({
               !isConnected || !isAuthenticated ? handleAuthClick : undefined
             }
             disabled={isSubmitting}
-            className="h-[56px] w-full bg-[#FBD537] text-xl font-bold text-[#0A0C0F] hover:bg-[#FBD537]/90"
+            className="h-[56px] w-full bg-[#BFFB06] text-xl font-bold text-[#0A0C0F] hover:bg-[#BFFB06]/90"
           >
             {!isConnected || !isAuthenticated ? (
               getButtonText()

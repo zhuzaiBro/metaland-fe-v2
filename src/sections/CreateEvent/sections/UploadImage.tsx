@@ -207,7 +207,7 @@ export default function UploadImage({
                           <span className="text-base font-bold text-[#F0F1F5]">
                             {t('createToken.upload.clickToUpload')}
                           </span>
-                          <span className="text-base font-bold text-[#FBD537]">
+                          <span className="text-base font-bold text-[#BFFB06]">
                             {t('createToken.form.required')}
                           </span>
                         </div>

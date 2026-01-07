@@ -162,7 +162,7 @@ function TokenCountdown({
         {/* Action button */}
         <Button
           onClick={onJoinClick}
-          className="font-din-pro h-10 w-[181px] rounded-md bg-[#FBD537] px-5 py-2 text-base font-normal text-black hover:bg-[#FBD537]/90"
+          className="font-din-pro h-10 w-[181px] rounded-md bg-[#BFFB06] px-5 py-2 text-base font-normal text-black hover:bg-[#BFFB06]/90"
         >
           {t('joinNow')}
         </Button>
@@ -941,7 +941,7 @@ export function CenterPanel({
                 {tab.label}
               </span>
               {activeTab === tab.id && (
-                <div className="absolute -bottom-[1px] left-1/2 h-[3px] w-[14px] -translate-x-1/2 rounded-t-sm bg-[#FBD537]" />
+                <div className="absolute -bottom-[1px] left-1/2 h-[3px] w-[14px] -translate-x-1/2 rounded-t-sm bg-[#BFFB06]" />
               )}
             </button>
           ))}

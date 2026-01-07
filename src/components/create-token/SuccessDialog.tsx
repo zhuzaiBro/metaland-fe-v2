@@ -159,7 +159,7 @@ export function SuccessDialog({
           {/* View on Homepage Button */}
           <Button
             onClick={handleViewOnHomepage}
-            className="font-din-pro h-[50px] flex-1 rounded-lg bg-[#FBD537] text-lg font-bold text-black hover:bg-[#FBD537]/90"
+            className="font-din-pro h-[50px] flex-1 rounded-lg bg-[#BFFB06] text-lg font-bold text-black hover:bg-[#BFFB06]/90"
           >
             <span>{t('createToken.success.viewHomepage')}</span>
             <Image

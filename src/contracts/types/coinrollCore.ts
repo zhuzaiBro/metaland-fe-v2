@@ -50,30 +50,44 @@ export interface CalculateInitialBuyBNBParams {
   virtualBNBReserve: bigint | string // Virtual BNB reserve
   virtualTokenReserve: bigint | string // Virtual token reserve
   percentageBP: number // Percentage in basis points (e.g., 100 = 1%)
+  totalSupply?: bigint | string // Total token supply (required for accurate calculation, contract uses this instead of saleAmount)
 }
 
 /**
  * Parameters for createToken function
+ * Must match the contract's CreateTokenParams struct exactly
  */
 export interface CreateTokenParams {
   // Token basic info
   name: string
   symbol: string
   totalSupply: string // Will be converted to bigint
+  saleAmount?: string // Optional, defaults to totalSupply * 0.8
 
   // Bonding curve parameters
   virtualBNBReserve?: string // Optional, defaults from contract
   virtualTokenReserve?: string // Optional, defaults from contract
 
+  // Launch parameters
+  launchTime?: number // Optional, defaults to 0 (immediate launch)
+
   // Initial buy parameters (optional)
-  initialBuyPercentageBP?: number // Percentage in basis points (0-1000)
+  initialBuyPercentageBP?: number // Percentage in basis points (0-9990)
+
+  // Margin parameters (optional)
+  marginBnb?: number // Optional, defaults to 0
+  marginTime?: number // Optional, defaults to 0
+
+  // Vesting parameters (optional)
+  vestingAllocations?: VestingAllocation[] // Optional, defaults to empty array
 
   // Meta information
   requestId: string // Unique request ID
   timestamp: number // Request timestamp
   creator: Address // Creator address
+  nonce?: number // Optional, defaults to random number
 
-  // Additional metadata (optional)
+  // Additional metadata (optional, not part of contract struct)
   metadata?: {
     description?: string
     website?: string
@@ -82,6 +96,27 @@ export interface CreateTokenParams {
     discord?: string
     logo?: string
   }
+}
+
+/**
+ * Vesting allocation structure
+ * Must match the contract's VestingAllocation struct
+ */
+export interface VestingAllocation {
+  amount: number // Basis points (0-10000)
+  launchTime?: number // Optional, defaults to 0 (use token creation time)
+  duration: number // Duration in seconds
+  mode: VestingMode // 0=BURN, 1=CLIFF, 2=LINEAR
+}
+
+/**
+ * Vesting mode enum
+ * Must match the contract's VestingMode enum
+ */
+export enum VestingMode {
+  BURN = 0,
+  CLIFF = 1,
+  LINEAR = 2,
 }
 
 /**

@@ -174,7 +174,7 @@ export function BannerCropDialog({
           <button
             onClick={handleUpload}
             disabled={isProcessing}
-            className="font-din-pro flex h-[50px] w-full items-center justify-center rounded-lg bg-[#FBD537] text-lg font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="font-din-pro flex h-[50px] w-full items-center justify-center rounded-lg bg-[#BFFB06] text-lg font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             {isProcessing
               ? t('createToken.crop.processing')
