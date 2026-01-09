@@ -265,7 +265,7 @@ export function EssentialInfoSection({
                           onChange={(e) =>
                             field.onChange(parseFloat(e.target.value))
                           }
-                          className="h-[50px] border-[#2B3139] bg-[#191B22]"
+                          className="h-[50px] text-[#F0F1F5] border-[#2B3139] bg-[#191B22]"
                         />
                       </FormControl>
                     </FormItem>
@@ -287,7 +287,7 @@ export function EssentialInfoSection({
                           onChange={(e) =>
                             field.onChange(parseFloat(e.target.value))
                           }
-                          className="h-[50px] border-[#2B3139] bg-[#191B22]"
+                          className="h-[50px] text-[#F0F1F5] border-[#2B3139] bg-[#191B22]"
                         />
                       </FormControl>
                     </FormItem>
