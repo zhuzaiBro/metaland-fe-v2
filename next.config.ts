@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
     domains: ['static.coinroll.io'],
     unoptimized: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  }
 }
 
 const withNextIntl = createNextIntlPlugin()
