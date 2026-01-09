@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-// import { kyClient } from '@/api/client/ky-client'
+import { kyClient } from '@/api/client/ky-client'
 import { parseApiResponse } from '@/api/utils/response-handler'
 import { notify } from '@/stores/useUIStore'
 import { inviteKeys } from './queries'
@@ -15,22 +15,6 @@ import {
   type CreateRebateRecordResponse,
   type CheckRebateRecordStatusResponse,
 } from '@/api/schemas/invite.schema'
-import ky, { KyInstance } from 'ky'
-
-export const kyClient: KyInstance = ky.create({
-  prefixUrl: 'http://localhost:8080/api/',
-  timeout: 10000,
-  retry: {
-    limit: 2,
-    methods: ['get'],
-    statusCodes: [408, 413, 429, 500, 502, 503, 504],
-  },
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    Authorization: `Bearer 123456789abcdefghijklmnopqrstuvwxyz`,
-  },
-})
 
 // API函数：创建返佣记录
 async function createRebateRecord(

@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'http',
+        protocol: 'https',
         hostname: 'upload.metanode.tech',
         pathname: '/**',
       },
