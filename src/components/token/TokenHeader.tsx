@@ -81,22 +81,25 @@ export function TokenHeader({ tokenAddress, tokenData }: TokenHeaderProps) {
     }
 
     const container = scrollContainerRef.current
-    if (container) {
-      // Initial check
-      checkScroll()
+    if (!container) return
 
-      // Add scroll listener
-      container.addEventListener('scroll', checkScroll)
+    // Initial check
+    checkScroll()
 
-      // Add resize listener to recheck on window resize
-      window.addEventListener('resize', checkScroll)
+    // Add scroll listener
+    container.addEventListener('scroll', checkScroll)
 
-      return () => {
+    // Add resize listener to recheck on window resize
+    window.addEventListener('resize', checkScroll)
+
+    return () => {
+      // Cleanup: remove event listeners
+      if (container) {
         container.removeEventListener('scroll', checkScroll)
-        window.removeEventListener('resize', checkScroll)
       }
+      window.removeEventListener('resize', checkScroll)
     }
-  }, [apiData]) // Re-run when data changes
+  }, []) // Only run once on mount, not when apiData changes
 
   // Format address for display
   const formatAddress = (address: string) => {

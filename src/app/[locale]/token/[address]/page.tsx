@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useEffect, useRef } from 'react'
 import { TokenHeader } from '@/components/token/TokenHeader'
 import { TrendingTicker } from '@/components/token/TrendingTicker'
 import { TokenContent } from '@/components/token/TokenContent'
@@ -36,6 +37,17 @@ function TokenPageContent() {
 export default function TokenPage() {
   const params = useParams()
   const tokenAddress = params.address as string
+  const prevTokenAddressRef = useRef<string | null>(null)
+
+  // Track token address changes to help with cleanup
+  useEffect(() => {
+    if (prevTokenAddressRef.current && prevTokenAddressRef.current !== tokenAddress) {
+      // Token address changed, cleanup will happen automatically via React
+      // This is just for tracking purposes
+      console.log('Token address changed, cleaning up previous token data')
+    }
+    prevTokenAddressRef.current = tokenAddress
+  }, [tokenAddress])
 
   return (
     <TokenDataProvider tokenAddress={tokenAddress}>

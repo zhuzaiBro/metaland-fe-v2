@@ -396,6 +396,7 @@ export function CenterPanel({
   const volumeSeriesRef = useRef<any>(null)
   const resizeObserverRef = useRef<ResizeObserver | null>(null)
   const chartInitializedRef = useRef<boolean>(false)
+  const crosshairHandlerRef = useRef<((param: any) => void) | null>(null)
   const { tokenData } = useTokenData()
 
   const [activeTab, setActiveTab] = useState('priceChart')
@@ -676,7 +677,7 @@ export function CenterPanel({
       chartInitializedRef.current = true
 
       // Subscribe to crosshair move events to track hovered candle
-      chart.subscribeCrosshairMove((param) => {
+      const crosshairMoveHandler = (param: any) => {
         if (!param || !param.time || !param.seriesData) {
           // No candle is being hovered, clear the state
           setHoveredCandle(null)
@@ -723,7 +724,11 @@ export function CenterPanel({
             change: changePercent,
           })
         }
-      })
+      }
+
+      // Store handler reference for cleanup
+      crosshairHandlerRef.current = crosshairMoveHandler
+      chart.subscribeCrosshairMove(crosshairMoveHandler)
 
       // Use ResizeObserver instead of window resize for better performance
       if (chartContainerRef.current) {
@@ -746,6 +751,16 @@ export function CenterPanel({
         if (resizeObserverRef.current) {
           resizeObserverRef.current.disconnect()
           resizeObserverRef.current = null
+        }
+
+        // Unsubscribe from crosshair events
+        if (chartRef.current && crosshairHandlerRef.current) {
+          try {
+            chartRef.current.unsubscribeCrosshairMove(crosshairHandlerRef.current)
+          } catch (e) {
+            // Handler might already be removed
+          }
+          crosshairHandlerRef.current = null
         }
 
         // Clear hovered candle state
@@ -862,64 +877,8 @@ export function CenterPanel({
     }
   }, [klineData, chartType])
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      // Flag that chart is being cleaned up
-      chartInitializedRef.current = false
-
-      // Clear all refs on component unmount
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect()
-        resizeObserverRef.current = null
-      }
-
-      // Clear hovered candle state
-      setHoveredCandle(null)
-
-      // Remove all series from chart before clearing refs
-      if (chartRef.current) {
-        if (candlestickSeriesRef.current) {
-          try {
-            chartRef.current.removeSeries(candlestickSeriesRef.current)
-          } catch (e) {}
-        }
-        if (ma7SeriesRef.current) {
-          try {
-            chartRef.current.removeSeries(ma7SeriesRef.current)
-          } catch (e) {}
-        }
-        if (ma25SeriesRef.current) {
-          try {
-            chartRef.current.removeSeries(ma25SeriesRef.current)
-          } catch (e) {}
-        }
-        if (ma99SeriesRef.current) {
-          try {
-            chartRef.current.removeSeries(ma99SeriesRef.current)
-          } catch (e) {}
-        }
-        if (volumeSeriesRef.current) {
-          try {
-            chartRef.current.removeSeries(volumeSeriesRef.current)
-          } catch (e) {}
-        }
-      }
-
-      // Clear all series refs
-      candlestickSeriesRef.current = null
-      ma7SeriesRef.current = null
-      ma25SeriesRef.current = null
-      ma99SeriesRef.current = null
-      volumeSeriesRef.current = null
-
-      // Remove chart if exists
-      if (chartRef.current) {
-        chartRef.current.remove()
-        chartRef.current = null
-      }
-    }
-  }, [])
+  // Note: Chart cleanup is handled in the chart initialization useEffect
+  // This separate cleanup effect is redundant and removed to prevent double cleanup
 
   return (
     <div className={cn('flex h-full flex-col', className)}>

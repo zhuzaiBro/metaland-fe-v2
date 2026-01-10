@@ -240,9 +240,29 @@ export function RightPanel({
 
     if (isEditingSlippage) {
       document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
     }
   }, [isEditingSlippage])
+
+  // Cleanup all timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (promptTimeoutRef.current) {
+        clearTimeout(promptTimeoutRef.current)
+        promptTimeoutRef.current = null
+      }
+      if (refetchTimeoutRef.current) {
+        clearTimeout(refetchTimeoutRef.current)
+        refetchTimeoutRef.current = null
+      }
+    }
+  }, [])
+
+  // Store timeout refs for cleanup
+  const promptTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const refetchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Add handler for wallet connection prompts
   const handleConnectWalletPrompt = () => {
@@ -252,7 +272,14 @@ export function RightPanel({
         // Simple toast notification
         notify.warning(t('connectWallet'), t('pleaseConnectWalletToTrade'))
         // Reset the flag to allow future prompts
-        setTimeout(() => setIsPromptingWallet(false), 5000)
+        // Clear previous timeout if exists
+        if (promptTimeoutRef.current) {
+          clearTimeout(promptTimeoutRef.current)
+        }
+        promptTimeoutRef.current = setTimeout(() => {
+          setIsPromptingWallet(false)
+          promptTimeoutRef.current = null
+        }, 5000)
       }
       return true
     }
@@ -443,11 +470,24 @@ export function RightPanel({
       setAmount('')
       resetBuy()
       // Refetch balances and bonding curve after a short delay to ensure blockchain state is updated
-      setTimeout(() => {
+      // Clear previous timeout if exists
+      if (refetchTimeoutRef.current) {
+        clearTimeout(refetchTimeoutRef.current)
+      }
+      refetchTimeoutRef.current = setTimeout(() => {
         refetchBnbBalance()
         refetchTokenBalance()
         refetchBondingCurve() // Force refresh bonding curve after successful buy
+        refetchTimeoutRef.current = null
       }, 1000)
+    }
+
+    // Cleanup timeout on unmount or when dependencies change
+    return () => {
+      if (refetchTimeoutRef.current) {
+        clearTimeout(refetchTimeoutRef.current)
+        refetchTimeoutRef.current = null
+      }
     }
   }, [
     isBuySuccess,
@@ -469,11 +509,24 @@ export function RightPanel({
       setAmount('')
       resetSell()
       // Refetch balances and bonding curve after a short delay to ensure blockchain state is updated
-      setTimeout(() => {
+      // Clear previous timeout if exists
+      if (refetchTimeoutRef.current) {
+        clearTimeout(refetchTimeoutRef.current)
+      }
+      refetchTimeoutRef.current = setTimeout(() => {
         refetchBnbBalance()
         refetchTokenBalance()
         refetchBondingCurve() // Force refresh bonding curve after successful sell
+        refetchTimeoutRef.current = null
       }, 1000)
+    }
+
+    // Cleanup timeout on unmount or when dependencies change
+    return () => {
+      if (refetchTimeoutRef.current) {
+        clearTimeout(refetchTimeoutRef.current)
+        refetchTimeoutRef.current = null
+      }
     }
   }, [
     isSellSuccess,
@@ -603,7 +656,11 @@ export function RightPanel({
         await refetchBondingCurve()
 
         // Wait a moment for the data to be updated
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        await new Promise((resolve) => {
+          const timeoutId = setTimeout(resolve, 500)
+          // Store timeout ID for potential cleanup (though this is in async function)
+          // In practice, this is fine as it's awaited and won't cause memory leak
+        })
 
         // Validate amount doesn't exceed balance for sell
         if (tokenBalance) {
