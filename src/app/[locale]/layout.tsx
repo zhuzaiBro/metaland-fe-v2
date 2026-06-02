@@ -57,6 +57,14 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning className="scrollbar-hide">
+
+      <head>
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="upgrade-insecure-requests"
+        />
+      </head>
+      
       <body className={`${dinpro.variable} bg-[#111319] font-sans`}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider defaultTheme="light">
