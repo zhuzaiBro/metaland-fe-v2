@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  other: {
+    "Content-Security-Policy": "upgrade-insecure-requests",
+  },
 }
 
 export default async function RootLayout({
@@ -54,8 +57,6 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning className="scrollbar-hide">
-      <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
       <body className={`${dinpro.variable} bg-[#111319] font-sans`}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider defaultTheme="light">
